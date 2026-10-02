@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import "./theme.css";
+import "./visual-style.css";
 {{THEME_IMPORT}}
 
 export const metadata: Metadata = {
@@ -11,7 +12,7 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body>{{THEME_OPEN}}{children}{{THEME_CLOSE}}</body>
+      <body data-visual-style="{{VISUAL_STYLE}}">{{THEME_OPEN}}{children}{{THEME_CLOSE}}</body>
     </html>
   );
 }

@@ -1,0 +1,12 @@
+:root {
+  --accent: #df5b3f;
+  --accent-soft: color-mix(in srgb, var(--accent) 12%, transparent);
+  --accent-contrast: #fff;
+  --style-surface: #d7e3da;
+  --style-font: "Trebuchet MS", Verdana, sans-serif;
+}
+
+body[data-visual-style="studio"] { font-family: var(--style-font); }
+body[data-visual-style="studio"] .landing-art { background: var(--style-surface); }
+body[data-visual-style="studio"] .preview-window { box-shadow: 18px 18px 0 var(--accent); transform: rotate(2deg); }
+body[data-visual-style="studio"] .metric, body[data-visual-style="studio"] .project-symbol { border-radius: 8px; }

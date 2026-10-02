@@ -21,6 +21,7 @@ test("assembles selected templates and IDE context", (context) => {
     database: "firebase",
     theme: "toggle",
     layout: "top-nav",
+    visualStyle: "terminal",
     googleAuth: true,
     deployment: "both"
   });
@@ -36,6 +37,7 @@ test("assembles selected templates and IDE context", (context) => {
   assert.equal(config.database, "firebase");
   assert.equal(config.layout, "top-nav");
   assert.equal(config.theme, "dynamic-toggle");
+  assert.equal(config.visualStyle, "terminal");
   assert.equal(config.googleSignIn, true);
   assert.deepEqual(config.routes, { landing: "/", signIn: "/sign-in", signUp: "/sign-up", dashboard: "/dashboard" });
   assert.deepEqual(config.deployment, ["vercel", "netlify"]);
@@ -46,6 +48,7 @@ test("assembles selected templates and IDE context", (context) => {
   assert.match(page, /sample-dashboard/);
   assert.match(dashboard, /Project board/);
   assert.match(dashboard, /ThemeToggle/);
+  assert.match(fs.readFileSync(path.join(projectPath, "app/visual-style.css"), "utf8"), /Courier New/);
   assert.match(signInPage, /mode="sign-in"/);
   assert.match(signUpPage, /mode="sign-up"/);
   assert.match(authForm, /Create account/);
@@ -62,6 +65,33 @@ test("assembles selected templates and IDE context", (context) => {
   assert.ok(fs.existsSync(path.join(projectPath, "vercel.json")));
   assert.ok(fs.existsSync(path.join(projectPath, "netlify.toml")));
   assert.ok(fs.existsSync(path.join(projectPath, "GOOGLE_SIGN_IN.md")));
+});
+
+test("selects different generated visual directions", (context) => {
+  const parentDir = fs.mkdtempSync(path.join(os.tmpdir(), "hackforge-style-test-"));
+  context.after(() => fs.rmSync(parentDir, { recursive: true, force: true }));
+  const editorialPath = generateProject({
+    name: "editorial-app",
+    parentDir,
+    database: "supabase",
+    theme: "light",
+    layout: "sidebar",
+    visualStyle: "editorial"
+  });
+  const studioPath = generateProject({
+    name: "studio-app",
+    parentDir,
+    database: "supabase",
+    theme: "light",
+    layout: "sidebar",
+    visualStyle: "studio"
+  });
+
+  const editorialCss = fs.readFileSync(path.join(editorialPath, "app/visual-style.css"), "utf8");
+  const studioCss = fs.readFileSync(path.join(studioPath, "app/visual-style.css"), "utf8");
+  assert.match(editorialCss, /Georgia/);
+  assert.match(studioCss, /Trebuchet MS/);
+  assert.notEqual(editorialCss, studioCss);
 });
 
 test("adds Supabase Google OAuth only when selected", (context) => {

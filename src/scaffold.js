@@ -7,6 +7,7 @@ const validChoices = {
   database: ["supabase", "firebase"],
   theme: ["dark", "light", "toggle"],
   layout: ["sidebar", "top-nav"],
+  visualStyle: ["studio", "editorial", "terminal"],
   deployment: ["none", "vercel", "netlify", "both"]
 };
 
@@ -65,7 +66,7 @@ function writePackageJson(destination, name, database, deployment, googleAuth) {
   fs.writeFileSync(path.join(destination, "package.json"), `${JSON.stringify(packageJson, null, 2)}\n`);
 }
 
-function writeHackforgeConfig(destination, { name, database, theme, layout, googleAuth, deployment }) {
+function writeHackforgeConfig(destination, { name, database, theme, layout, visualStyle, googleAuth, deployment }) {
   const environmentVariables = database === "supabase"
     ? ["NEXT_PUBLIC_SUPABASE_URL", "NEXT_PUBLIC_SUPABASE_ANON_KEY"]
     : ["NEXT_PUBLIC_FIREBASE_API_KEY", "NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN", "NEXT_PUBLIC_FIREBASE_PROJECT_ID", "NEXT_PUBLIC_FIREBASE_APP_ID"];
@@ -83,15 +84,16 @@ function writeHackforgeConfig(destination, { name, database, theme, layout, goog
     googleSignIn: googleAuth,
     theme: themeLabel,
     layout,
+    visualStyle,
     routes: { landing: "/", signIn: "/sign-in", signUp: "/sign-up", dashboard: "/dashboard" },
     deployment: deployments,
     environmentVariables,
-    aiContext: `This project uses ${databaseLabel} for database and authentication${googleAuth ? " with Google sign-in enabled" : ""}. Use ${environmentVariables.join(" and ")} for its client configuration. The UI uses ${themeLabel} theming with a ${layout} dashboard layout. Deployment targets: ${deployments.length ? deployments.join(" and ") : "none configured"}. Do not introduce a different backend or theme system without an explicit request.`
+    aiContext: `This project uses ${databaseLabel} for database and authentication${googleAuth ? " with Google sign-in enabled" : ""}. Use ${environmentVariables.join(" and ")} for its client configuration. The UI uses ${themeLabel} theming, a ${layout} dashboard layout, and the ${visualStyle} visual direction. Deployment targets: ${deployments.length ? deployments.join(" and ") : "none configured"}. Do not introduce a different backend or theme system without an explicit request.`
   };
   fs.writeFileSync(path.join(destination, "hackforge.config.json"), `${JSON.stringify(config, null, 2)}\n`);
 }
 
-function renderLayout(destination, { theme, layout, googleAuth }) {
+function renderLayout(destination, { theme, layout, visualStyle, googleAuth }) {
   const layoutPath = path.join(destination, "app", "layout.tsx");
   const landingPath = path.join(destination, "app", "page.tsx");
   const dashboardPath = path.join(destination, "app", "dashboard", "page.tsx");
@@ -99,6 +101,7 @@ function renderLayout(destination, { theme, layout, googleAuth }) {
   const themeProvider = theme === "toggle";
   const layoutSource = fs.readFileSync(layoutPath, "utf8")
     .replaceAll("{{PROJECT_NAME}}", path.basename(destination))
+    .replace("{{VISUAL_STYLE}}", visualStyle)
     .replace("{{THEME_IMPORT}}", themeProvider ? 'import { ThemeProvider } from "../components/theme-provider";' : "")
     .replace("{{THEME_OPEN}}", themeProvider ? "<ThemeProvider>" : "")
     .replace("{{THEME_CLOSE}}", themeProvider ? "</ThemeProvider>" : "");
@@ -122,9 +125,9 @@ function renderLayout(destination, { theme, layout, googleAuth }) {
   fs.writeFileSync(authFormPath, authFormSource);
 }
 
-export function generateProject({ name, parentDir = process.cwd(), database, theme, layout, googleAuth = false, deployment = "none" }) {
+export function generateProject({ name, parentDir = process.cwd(), database, theme, layout, visualStyle = "studio", googleAuth = false, deployment = "none" }) {
   validateProjectName(name);
-  validateChoices({ database, theme, layout, deployment });
+  validateChoices({ database, theme, layout, visualStyle, deployment });
   if (typeof googleAuth !== "boolean") throw new Error("googleAuth must be true or false.");
 
   const destination = path.resolve(parentDir, name);
@@ -139,13 +142,14 @@ export function generateProject({ name, parentDir = process.cwd(), database, the
   copyTemplate(path.join(templateRoot, "pages", "auth"), destination);
   copyTemplate(path.join(templateRoot, "auth", database), destination);
   copyTemplate(path.join(templateRoot, "theme", theme), destination);
+  copyTemplate(path.join(templateRoot, "style", visualStyle), destination);
   if (googleAuth) copyTemplate(path.join(templateRoot, "google-auth", database), destination);
   if (deployment === "vercel" || deployment === "both") copyTemplate(path.join(templateRoot, "deployment", "vercel"), destination);
   if (deployment === "netlify" || deployment === "both") copyTemplate(path.join(templateRoot, "deployment", "netlify"), destination);
   if (deployment !== "none") copyTemplate(path.join(templateRoot, "deployment", "shared"), destination);
   if (googleAuth) copyTemplate(path.join(templateRoot, "google-auth", "shared"), destination);
   writePackageJson(destination, name, database, deployment, googleAuth);
-  writeHackforgeConfig(destination, { name, database, theme, layout, googleAuth, deployment });
-  renderLayout(destination, { theme, layout, googleAuth });
+  writeHackforgeConfig(destination, { name, database, theme, layout, visualStyle, googleAuth, deployment });
+  renderLayout(destination, { theme, layout, visualStyle, googleAuth });
   return destination;
 }

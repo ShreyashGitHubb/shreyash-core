@@ -1,0 +1,18 @@
+:root {
+  --accent: #315c58;
+  --accent-soft: color-mix(in srgb, var(--accent) 13%, transparent);
+  --accent-contrast: #fff;
+  --style-surface: #dce5df;
+  --style-font: Georgia, "Times New Roman", serif;
+}
+
+body[data-visual-style="editorial"] { font-family: var(--style-font); }
+body[data-visual-style="editorial"] .landing-nav,
+body[data-visual-style="editorial"] .topbar { border-color: var(--accent); }
+body[data-visual-style="editorial"] .landing-hero { grid-template-columns: 1.1fr .9fr; }
+body[data-visual-style="editorial"] .landing-copy h1,
+body[data-visual-style="editorial"] .dashboard-topbar h1 { font-weight: 500; }
+body[data-visual-style="editorial"] .landing-art { background: var(--style-surface); }
+body[data-visual-style="editorial"] .preview-window { box-shadow: 12px 12px 0 var(--accent); transform: rotate(-1deg); }
+body[data-visual-style="editorial"] .metric { border-width: 0 0 1px; background: transparent; }
+body[data-visual-style="editorial"] .button { border-radius: 2px; }

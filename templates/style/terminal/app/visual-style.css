@@ -1,0 +1,22 @@
+:root {
+  --accent: #7ed99a;
+  --accent-soft: color-mix(in srgb, var(--accent) 15%, transparent);
+  --accent-contrast: #142119;
+  --style-surface: #d5eadb;
+  --style-font: "Courier New", Courier, monospace;
+}
+
+body[data-visual-style="terminal"] { font-family: var(--style-font); }
+body[data-visual-style="terminal"] .landing-art {
+  background-color: var(--style-surface);
+  background-image: linear-gradient(to right, color-mix(in srgb, var(--accent) 16%, transparent) 1px, transparent 1px), linear-gradient(to bottom, color-mix(in srgb, var(--accent) 16%, transparent) 1px, transparent 1px);
+  background-size: 22px 22px;
+}
+body[data-visual-style="terminal"] .brand-mark,
+body[data-visual-style="terminal"] .button,
+body[data-visual-style="terminal"] .metric,
+body[data-visual-style="terminal"] .project-symbol { border-radius: 0; }
+body[data-visual-style="terminal"] .preview-window { box-shadow: 12px 12px 0 var(--accent); transform: none; }
+body[data-visual-style="terminal"] .landing-copy h1,
+body[data-visual-style="terminal"] .dashboard-topbar h1 { font-family: var(--style-font); }
+body[data-visual-style="terminal"] .metric { border-style: dashed; }

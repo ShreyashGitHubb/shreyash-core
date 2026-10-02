@@ -5,8 +5,10 @@ An interactive command-line generator for hackathon-ready Next.js projects. Choo
 ## Quick Start
 
 ```sh
-npx shreyash-core
+npx shreyash-core@latest
 ```
+
+Check which CLI release npm runs with `npx --yes shreyash-core@latest --version`. A project created earlier is a copy of the templates from the time it was generated; installing a newer CLI does not rewrite that existing directory. Generate into a new directory to get updated pages and styling.
 
 The CLI asks for a project directory and the options to include, then prints the commands to install and run the generated project.
 
@@ -19,6 +21,7 @@ npx shreyash-core \
   --database supabase \
   --theme toggle \
   --layout sidebar \
+  --style editorial \
   --google-auth \
   --deploy vercel
 ```
@@ -62,6 +65,7 @@ The generated project also includes:
 - **Backend:** Supabase or Firebase
 - **Theme:** dark only, light only, or a dynamic toggle
 - **Dashboard layout:** sidebar or top navigation
+- **Visual direction:** studio, editorial, or terminal
 - **Google sign-in:** optional; configure OAuth in the provider and Google Cloud dashboards
 - **Deployment setup:** none, Vercel, Netlify, or both
 
@@ -76,13 +80,14 @@ Deployment setup adds provider configuration files and instructions; it does not
 | `--database <choice>` | `supabase` or `firebase` |
 | `--theme <choice>` | `dark`, `light`, or `toggle` |
 | `--layout <choice>` | `sidebar` or `top-nav` |
+| `--style <choice>` | `studio`, `editorial`, or `terminal` |
 | `--google-auth` | Include Google sign-in setup |
 | `--no-google-auth` | Explicitly omit Google sign-in |
 | `--deploy <choice>` | `none`, `vercel`, `netlify`, or `both` |
 | `--yes`, `-y` | Use defaults for options not supplied |
 | `--help`, `-h` | Print command help |
 
-With `--yes`, omitted options default to Supabase, dark-only theme, sidebar navigation, Google sign-in off, and no deployment configuration. A project name is still required.
+With `--yes`, omitted options default to Supabase, dark-only theme, sidebar navigation, studio visual style, Google sign-in off, and no deployment configuration. A project name is still required.
 
 ## Configure the Backend
 
