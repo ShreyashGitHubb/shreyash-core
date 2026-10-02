@@ -79,3 +79,4 @@ jobs:
             git commit -m "chore: release shreyash-core@${{ steps.version.outputs.version }} [skip ci]"
             git push
           fi
+          
