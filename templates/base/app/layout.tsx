@@ -4,8 +4,8 @@ import "./theme.css";
 {{THEME_IMPORT}}
 
 export const metadata: Metadata = {
-  title: "HackForge Starter",
-  description: "A focused starting point for your next hackathon project."
+  title: "{{PROJECT_NAME}}",
+  description: "A focused starting point for your next project."
 };
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {

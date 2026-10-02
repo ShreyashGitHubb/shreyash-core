@@ -83,6 +83,7 @@ function writeHackforgeConfig(destination, { name, database, theme, layout, goog
     googleSignIn: googleAuth,
     theme: themeLabel,
     layout,
+    routes: { landing: "/", signIn: "/sign-in", signUp: "/sign-up", dashboard: "/dashboard" },
     deployment: deployments,
     environmentVariables,
     aiContext: `This project uses ${databaseLabel} for database and authentication${googleAuth ? " with Google sign-in enabled" : ""}. Use ${environmentVariables.join(" and ")} for its client configuration. The UI uses ${themeLabel} theming with a ${layout} dashboard layout. Deployment targets: ${deployments.length ? deployments.join(" and ") : "none configured"}. Do not introduce a different backend or theme system without an explicit request.`
@@ -92,20 +93,33 @@ function writeHackforgeConfig(destination, { name, database, theme, layout, goog
 
 function renderLayout(destination, { theme, layout, googleAuth }) {
   const layoutPath = path.join(destination, "app", "layout.tsx");
-  const pagePath = path.join(destination, "app", "page.tsx");
+  const landingPath = path.join(destination, "app", "page.tsx");
+  const dashboardPath = path.join(destination, "app", "dashboard", "page.tsx");
+  const authFormPath = path.join(destination, "components", "auth-form.tsx");
   const themeProvider = theme === "toggle";
   const layoutSource = fs.readFileSync(layoutPath, "utf8")
+    .replaceAll("{{PROJECT_NAME}}", path.basename(destination))
     .replace("{{THEME_IMPORT}}", themeProvider ? 'import { ThemeProvider } from "../components/theme-provider";' : "")
     .replace("{{THEME_OPEN}}", themeProvider ? "<ThemeProvider>" : "")
     .replace("{{THEME_CLOSE}}", themeProvider ? "</ThemeProvider>" : "");
-  const pageSource = fs.readFileSync(pagePath, "utf8")
+  const landingSource = fs.readFileSync(landingPath, "utf8")
+    .replace("{{PROJECT_NAME}}", path.basename(destination))
+  const dashboardSource = fs.readFileSync(dashboardPath, "utf8")
     .replace("{{PROJECT_NAME}}", path.basename(destination))
     .replace("{{THEME_CONTROL}}", themeProvider ? '<ThemeToggle />' : "")
-    .replace("{{THEME_IMPORT}}", themeProvider ? 'import { ThemeToggle } from "../components/theme-toggle";' : "")
-    .replace("{{GOOGLE_AUTH_IMPORT}}", googleAuth ? 'import { GoogleSignInButton } from "../components/google-sign-in-button";' : "")
+    .replace("{{THEME_IMPORT}}", themeProvider ? 'import { ThemeToggle } from "../../components/theme-toggle";' : "");
+  const authFormSource = fs.readFileSync(authFormPath, "utf8")
+    .replace("{{GOOGLE_AUTH_IMPORT}}", googleAuth ? 'import { GoogleSignInButton } from "./google-sign-in-button";' : "")
     .replace("{{GOOGLE_AUTH_CONTROL}}", googleAuth ? "<GoogleSignInButton />" : "");
+  for (const route of ["sign-in", "sign-up"]) {
+    const authPagePath = path.join(destination, "app", route, "page.tsx");
+    const authPageSource = fs.readFileSync(authPagePath, "utf8").replaceAll("{{PROJECT_NAME}}", path.basename(destination));
+    fs.writeFileSync(authPagePath, authPageSource);
+  }
   fs.writeFileSync(layoutPath, layoutSource);
-  fs.writeFileSync(pagePath, pageSource);
+  fs.writeFileSync(landingPath, landingSource);
+  fs.writeFileSync(dashboardPath, dashboardSource);
+  fs.writeFileSync(authFormPath, authFormSource);
 }
 
 export function generateProject({ name, parentDir = process.cwd(), database, theme, layout, googleAuth = false, deployment = "none" }) {
@@ -121,6 +135,9 @@ export function generateProject({ name, parentDir = process.cwd(), database, the
   copyTemplate(path.join(templateRoot, "base"), destination);
   copyTemplate(path.join(templateRoot, "database", database), destination);
   copyTemplate(path.join(templateRoot, "layout", layout), destination);
+  copyTemplate(path.join(templateRoot, "pages", "landing"), destination);
+  copyTemplate(path.join(templateRoot, "pages", "auth"), destination);
+  copyTemplate(path.join(templateRoot, "auth", database), destination);
   copyTemplate(path.join(templateRoot, "theme", theme), destination);
   if (googleAuth) copyTemplate(path.join(templateRoot, "google-auth", database), destination);
   if (deployment === "vercel" || deployment === "both") copyTemplate(path.join(templateRoot, "deployment", "vercel"), destination);
