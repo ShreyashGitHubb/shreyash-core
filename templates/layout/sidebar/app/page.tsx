@@ -1,4 +1,5 @@
 {{THEME_IMPORT}}
+{{GOOGLE_AUTH_IMPORT}}
 
 const navigation = ["Overview", "Projects", "Team", "Settings"];
 
@@ -19,7 +20,7 @@ export default function HomePage() {
             <p className="eyebrow">Your starting point</p>
             <h1>Make something<br />worth showing.</h1>
             <p className="intro">Your workspace is ready. Connect your team, shape the first idea, and turn a blank slate into a working demo.</p>
-            <div className="button-row"><a className="button primary" href="#">Create a project</a><a className="button" href="#">Invite teammates</a></div>
+            <div className="button-row"><a className="button primary" href="#">Create a project</a><a className="button" href="#">Invite teammates</a>{{GOOGLE_AUTH_CONTROL}}</div>
           </div>
         </section>
         <p className="status">Workspace initialized <span aria-hidden="true">·</span> Backend credentials can be added in <code>.env.local</code></p>

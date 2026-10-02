@@ -20,7 +20,9 @@ test("assembles selected templates and IDE context", (context) => {
     parentDir,
     database: "firebase",
     theme: "toggle",
-    layout: "top-nav"
+    layout: "top-nav",
+    googleAuth: true,
+    deployment: "both"
   });
   const config = JSON.parse(fs.readFileSync(path.join(projectPath, "hackforge.config.json"), "utf8"));
   const packageJson = JSON.parse(fs.readFileSync(path.join(projectPath, "package.json"), "utf8"));
@@ -30,13 +32,41 @@ test("assembles selected templates and IDE context", (context) => {
   assert.equal(config.database, "firebase");
   assert.equal(config.layout, "top-nav");
   assert.equal(config.theme, "dynamic-toggle");
+  assert.equal(config.googleSignIn, true);
+  assert.deepEqual(config.deployment, ["vercel", "netlify"]);
   assert.ok(packageJson.dependencies.firebase);
   assert.equal(packageJson.dependencies["@supabase/supabase-js"], undefined);
+  assert.ok(packageJson.devDependencies["@netlify/plugin-nextjs"]);
   assert.match(page, /ThemeToggle/);
   assert.match(page, /sample-dashboard/);
   assert.match(layout, /ThemeProvider/);
   assert.ok(fs.existsSync(path.join(projectPath, "lib/backend.ts")));
+  assert.ok(fs.existsSync(path.join(projectPath, "lib/google-auth.ts")));
   assert.ok(fs.existsSync(path.join(projectPath, "components/theme-toggle.tsx")));
+  assert.ok(fs.existsSync(path.join(projectPath, "vercel.json")));
+  assert.ok(fs.existsSync(path.join(projectPath, "netlify.toml")));
+  assert.ok(fs.existsSync(path.join(projectPath, "GOOGLE_SIGN_IN.md")));
+});
+
+test("adds Supabase Google OAuth only when selected", (context) => {
+  const parentDir = fs.mkdtempSync(path.join(os.tmpdir(), "hackforge-test-"));
+  context.after(() => fs.rmSync(parentDir, { recursive: true, force: true }));
+  const projectPath = generateProject({
+    name: "supabase-google",
+    parentDir,
+    database: "supabase",
+    theme: "light",
+    layout: "sidebar",
+    googleAuth: true,
+    deployment: "none"
+  });
+
+  const config = JSON.parse(fs.readFileSync(path.join(projectPath, "hackforge.config.json"), "utf8"));
+  const helper = fs.readFileSync(path.join(projectPath, "lib/google-auth.ts"), "utf8");
+  assert.equal(config.authentication, "supabase+google");
+  assert.match(helper, /signInWithOAuth/);
+  assert.equal(fs.existsSync(path.join(projectPath, "vercel.json")), false);
+  assert.equal(fs.existsSync(path.join(projectPath, "netlify.toml")), false);
 });
 
 test("refuses to overwrite an existing destination", (context) => {
