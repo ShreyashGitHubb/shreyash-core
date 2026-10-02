@@ -1,0 +1,23 @@
+{
+  "name": "create-hackforge",
+  "version": "1.0.0",
+  "description": "Interactive starter generator for hackathon projects",
+  "type": "module",
+  "bin": {
+    "create-hackforge": "./bin/index.js"
+  },
+  "files": [
+    "bin",
+    "src",
+    "templates"
+  ],
+  "engines": {
+    "node": ">=18"
+  },
+  "scripts": {
+    "test": "node --test"
+  },
+  "dependencies": {
+    "@inquirer/prompts": "^7.3.2"
+  }
+}

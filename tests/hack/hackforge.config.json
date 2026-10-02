@@ -1,0 +1,15 @@
+{
+  "schemaVersion": 1,
+  "projectName": "hack",
+  "stack": "nextjs-app-router",
+  "styling": "tailwindcss",
+  "database": "supabase",
+  "authentication": "supabase",
+  "theme": "dynamic-toggle",
+  "layout": "sidebar",
+  "environmentVariables": [
+    "NEXT_PUBLIC_SUPABASE_URL",
+    "NEXT_PUBLIC_SUPABASE_ANON_KEY"
+  ],
+  "aiContext": "This project uses Supabase for database and authentication. Use NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY for its client configuration. The UI uses dynamic-toggle theming with a sidebar dashboard layout. Do not introduce a different backend or theme system without an explicit request."
+}
