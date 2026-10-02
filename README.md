@@ -1,44 +1,137 @@
-# HackForge CLI
+# shreyash-core
 
-HackForge is an npm-installable interactive generator for a Next.js App Router and Tailwind CSS hackathon starter. It assembles templates for Supabase or Firebase, optional Google sign-in, dark/light theme behavior, sidebar or top navigation layouts, and Vercel and/or Netlify deployment.
+An interactive command-line generator for hackathon-ready Next.js projects. Choose a backend, authentication options, theme, dashboard navigation, and hosting configuration, then get a project scaffold with separate landing, authentication, and dashboard routes.
 
-## Develop this package
-
-```sh
-npm install
-npm test
-node ./bin/index.js
-```
-
-## Use the CLI
-
-After publishing the package to npm, run:
+## Quick Start
 
 ```sh
 npx shreyash-core
 ```
 
-To generate a project without interactive prompts:
+The CLI asks for a project directory and the options to include, then prints the commands to install and run the generated project.
+
+To select everything from the command line instead:
 
 ```sh
-npx shreyash-core --yes --name demo --database supabase --theme toggle --layout sidebar --google-auth --deploy both
+npx shreyash-core \
+  --yes \
+  --name my-hackathon-app \
+  --database supabase \
+  --theme toggle \
+  --layout sidebar \
+  --google-auth \
+  --deploy vercel
 ```
 
-## Automatic npm publishing
+Run the generated app:
 
-Every push to `main` runs the tests, publishes the package to npm with provenance, and commits the published version back to `package.json` and `package-lock.json`. If the repository version is ahead of npm, that version is published first; later pushes increment the patch version. Feature branches do not publish.
+```sh
+cd my-hackathon-app
+npm install
+npm run dev
+```
 
-One-time GitHub/npm setup:
+Open `http://localhost:3000` after the development server starts.
 
-1. Push this workflow to the GitHub repository's `main` branch.
-2. On npm, open the `shreyash-core` package settings and add a **Trusted Publisher** for GitHub Actions. Set owner `ShreyashGitHubb`, repository `shreyash-core`, and workflow filename `publish.yml`.
-3. In GitHub repository settings, allow GitHub Actions to read and write repository contents so the workflow can commit the version bump.
-4. Push changes to `main`. Watch the **Actions > Publish to npm** run; failed tests prevent publishing.
+## What It Generates
 
-The workflow uses npm trusted publishing (OIDC), so no npm token is stored in GitHub secrets. If npm's Trusted Publisher cannot be configured, use a granular npm publish token with 2FA bypass as a GitHub Actions secret and configure the publish step to use it.
+Every project has these routes:
 
-Supported deployment values are `none`, `vercel`, `netlify`, and `both`. Google sign-in is off by default in non-interactive mode; pass `--google-auth` to enable it or `--no-google-auth` to disable it explicitly.
+| Route | Purpose |
+| --- | --- |
+| `/` | Public landing page |
+| `/sign-in` | Email/password sign-in, with optional Google sign-in |
+| `/sign-up` | Email/password account creation, with optional Google sign-in |
+| `/dashboard` | Starter workspace dashboard |
 
-Every generated app has a distinct public landing page (`/`), sign-in page (`/sign-in`), sign-up page (`/sign-up`), and dashboard (`/dashboard`). The sidebar/top-nav choice controls the dashboard shell, not whether those routes exist. The dashboard starts with sample UI data; add real data access and server-side route protection before production.
+The dashboard uses the navigation layout you select. It currently contains sample project and team information so you can replace it with your application data.
 
-The generated project includes a `hackforge.config.json` file containing its selected stack, auth mode, deployment targets, generated routes, and environment variable names. Backend credentials are configured through `.env.local`; the generated `.env.example` lists the expected keys. When enabled, `GOOGLE_SIGN_IN.md` and `DEPLOYMENT.md` explain provider-console setup, hosting configuration, and environment variables. OAuth client secrets remain in the provider dashboards and are never generated into source files.
+The generated project also includes:
+
+- Next.js App Router, React, TypeScript, and Tailwind CSS setup
+- Supabase or Firebase client setup and email authentication helpers
+- Optional Google OAuth helper and sign-in button
+- Dark-only, light-only, or switchable theme
+- Optional Vercel and/or Netlify configuration files
+- `.env.example` with the environment variable names for the selected backend
+- `hackforge.config.json` describing the selected stack and generated routes
+- Setup guides for Google sign-in and deployment when those options are selected
+
+## Interactive Choices
+
+- **Backend:** Supabase or Firebase
+- **Theme:** dark only, light only, or a dynamic toggle
+- **Dashboard layout:** sidebar or top navigation
+- **Google sign-in:** optional; configure OAuth in the provider and Google Cloud dashboards
+- **Deployment setup:** none, Vercel, Netlify, or both
+
+Deployment setup adds provider configuration files and instructions; it does not create hosting accounts or deploy the project automatically.
+
+## CLI Options
+
+| Option | Values or meaning |
+| --- | --- |
+| `--name <folder>` | Name of the new project directory |
+| `--dir <parent>` | Parent directory; defaults to the current directory |
+| `--database <choice>` | `supabase` or `firebase` |
+| `--theme <choice>` | `dark`, `light`, or `toggle` |
+| `--layout <choice>` | `sidebar` or `top-nav` |
+| `--google-auth` | Include Google sign-in setup |
+| `--no-google-auth` | Explicitly omit Google sign-in |
+| `--deploy <choice>` | `none`, `vercel`, `netlify`, or `both` |
+| `--yes`, `-y` | Use defaults for options not supplied |
+| `--help`, `-h` | Print command help |
+
+With `--yes`, omitted options default to Supabase, dark-only theme, sidebar navigation, Google sign-in off, and no deployment configuration. A project name is still required.
+
+## Configure the Backend
+
+After generation, copy the relevant values from `.env.example` into a local `.env.local` file, then fill in your project credentials. Never commit `.env.local`, OAuth client secrets, or other private credentials.
+
+For Google OAuth and hosting setup, follow `GOOGLE_SIGN_IN.md` and `DEPLOYMENT.md` in the generated project when present. Google provider settings and authorized redirect URLs must be configured in the provider dashboards.
+
+## Production Notes
+
+The scaffold gives you working starter UI and client-side email authentication calls. It is not a complete production security setup:
+
+- Protect `/dashboard` and other private routes with server-side authentication checks before using them for private data.
+- Replace dashboard sample content with your own database queries and authorization rules.
+- Configure Supabase policies or Firebase Security Rules for the data your app stores.
+- Configure and test OAuth redirect URLs for local, preview, and production environments.
+- Set environment variables separately in each hosting provider.
+
+## Develop This Package
+
+Requirements: Node.js 18 or newer and npm.
+
+```sh
+git clone https://github.com/ShreyashGitHubb/shreyash-core.git
+cd shreyash-core
+npm install
+npm test
+node ./bin/index.js
+```
+
+Before submitting changes, run `npm test`. To inspect the files that would be published:
+
+```sh
+npm pack --dry-run
+```
+
+## npm Releases
+
+The GitHub Actions workflow in `.github/workflows/publish.yml` runs on pushes to `main`. It runs the tests, selects a package version newer than the latest npm release, publishes with provenance, and commits any version bump back to the repository.
+
+Publishing requires an npm Trusted Publisher configured for GitHub Actions with:
+
+- Owner: `ShreyashGitHubb`
+- Repository: `shreyash-core`
+- Workflow filename: `publish.yml`
+- Environment: blank, unless the workflow is changed to use a GitHub Environment
+- Allowed action: direct `npm publish`
+
+The package manifest's `repository.url` must match the GitHub repository. GitHub Actions also needs permission to write repository contents so it can commit version updates. No npm token is needed when Trusted Publishing is configured correctly.
+
+## License
+
+No license is currently specified. Add a license before encouraging reuse or redistribution of this package.
