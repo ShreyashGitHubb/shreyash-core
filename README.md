@@ -15,13 +15,13 @@ node ./bin/index.js
 After publishing the package to npm, run:
 
 ```sh
-npx create-hackforge
+npx shreyash-core
 ```
 
 To generate a project without interactive prompts:
 
 ```sh
-npx create-hackforge --yes --name demo --database supabase --theme toggle --layout sidebar --google-auth --deploy both
+npx shreyash-core --yes --name demo --database supabase --theme toggle --layout sidebar --google-auth --deploy both
 ```
 
 Supported deployment values are `none`, `vercel`, `netlify`, and `both`. Google sign-in is off by default in non-interactive mode; pass `--google-auth` to enable it or `--no-google-auth` to disable it explicitly.

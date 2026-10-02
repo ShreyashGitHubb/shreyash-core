@@ -30,7 +30,7 @@ function readArguments(args) {
 }
 
 function printHelp() {
-  console.log(`create-hackforge [options]
+  console.log(`shreyash-core [options]
 
 Create a Next.js + Tailwind starter with your chosen backend and UI shell.
 
